@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+//#include <ctype.h>
+#include <iostream>
+#include <fstream>
+#include <time.h>
+
+using namespace std;
+
+
+char board[3][3];
+const char Player= 'X';
+const char Computer = 'Y';
+int counter= 9;
+
+bool gameover = false;
+
+void resetBoard();
+void printBoard();
+void playerMove();
+char checkWinner();
+void computerMove();
+
+
+
+
+int main(){
+    cout<<"print"<<endl;
+    char winner = ' ';
+    char ask = ' ';
+    
+    do{
+        resetBoard();
+    
+    
+    while(true){
+        printBoard();
+        playerMove();
+        
+        if (checkWinner() == Player){
+            cout<<"player wins"<<endl;
+            break;
+            
+        }
+        
+        else if(checkWinner() == Computer){
+            cout<<"computer wins"<<endl;
+            break;
+        }
+        computerMove();
+        if (counter == 0 && checkWinner() == ' ') { 
+            cout << "It's a draw!\n"; 
+            break;
+            
+        }
+        
+    }
+    
+            cout<<"do you want to play again put Y to play"<<endl;
+            cin>>ask;
+            ask = toupper(ask);
+    
+    
+    
+}while(ask == 'Y');
+
+cout<<"thank you for play"<<endl;
+return 0;
+}
+
+
+
+void computerMove(){
+    s:
+    srand(time(0));
+    
+    if(counter>0){
+        int x = rand()%2;
+        int y = rand()%2;
+        if(board[x][y] == ' '){
+            board[x][y] = Computer;
+            counter--;
+        }
+       else{
+            goto s;
+       }
+        
+    }
+            
+}
+
+void printBoard(){
+    cout << "-------------\n"; 
+    for (int i = 0; i < 3; i++) { 
+        cout << "| "; 
+        for (int j = 0; j < 3; j++) { 
+            cout << board[i][j] << " | "; 
+        } 
+        cout << "\n-------------\n"; 
+    }
+}
+
+void resetBoard(){
+    for (int i = 0; i < 3; i++) { 
+        for (int j = 0; j < 3; j++) {
+            board[i][j] =' ';
+        }
+    }
+    
+}
+
+void playerMove(){
+    m:
+    int x,y;
+    cout<<"please enter row (0-2) and column (0-2)"<<endl;
+    cin>>x>>y;
+        if (board[x][y] != ' ' || x < 0 || x > 2 
+                || y < 0 || y > 2) { 
+            cout << "Invalid move. Try again.\n";
+            goto m;
+        }
+        else{
+             board[x][y] = Player;
+             counter--;
+             
+        }
+   
+}
+
+char checkWinner(){
+    for(int i=0; i<3;i++){
+      if(board[i][0] == board[i][1] && board[i][0] == board[i][2]){
+        return board[i][0];
+      }  
+    
+  
+      if(board[0][i] == board[1][i] && board[0][i] == board[2][i]){
+        return board[0][i];
+      }  
+    }
+
+    
+      if(board[0][0] == board[1][1] && board[0][0] == board[2][2]){
+        return board[0][0];
+      }  
+    
+     
+      if(board[0][2] == board[1][1] && board[0][2] == board[2][0]){
+        return board[0][2];
+      }  
+    return ' ';
+}
