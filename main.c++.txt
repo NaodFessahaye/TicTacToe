@@ -17,10 +17,11 @@ bool gameover = false;
 
 void resetBoard();
 void printBoard();
-void playerMove();
+void player1Move();
+void player2Move();
 char checkWinner();
 void computerMove();
-
+int type;
 
 
 
@@ -29,13 +30,18 @@ int main(){
     char winner = ' ';
     char ask = ' ';
     
+    
     do{
         resetBoard();
-    
-    
-    while(true){
+        cout<<"1 player or 2 players?"<<endl;
+        cin>>type;
         printBoard();
-        playerMove();
+    while(true){
+        
+          
+        
+        player1Move();
+        printBoard();
         
         if (checkWinner() == Player){
             cout<<"player wins"<<endl;
@@ -47,13 +53,20 @@ int main(){
             cout<<"computer wins"<<endl;
             break;
         }
-        computerMove();
+        
         if (counter == 0 && checkWinner() == ' ') { 
             cout << "It's a draw!\n"; 
             break;
             
         }
         
+        if (type ==1){
+            computerMove();
+        }
+        else if(type ==2){
+            player2Move();
+        }
+        printBoard();
     }
     
             cout<<"do you want to play again put Y to play"<<endl;
@@ -109,10 +122,10 @@ void resetBoard(){
     
 }
 
-void playerMove(){
+void player1Move(){
     m:
     int x,y;
-    cout<<"please enter row (0-2) and column (0-2)"<<endl;
+    cout<<"player 1 please enter row (0-2) and column (0-2)"<<endl;
     cin>>x>>y;
         if (board[x][y] != ' ' || x < 0 || x > 2 
                 || y < 0 || y > 2) { 
@@ -121,6 +134,24 @@ void playerMove(){
         }
         else{
              board[x][y] = Player;
+             counter--;
+             
+        }
+   
+}
+
+void player2Move(){
+    n:
+    int x,y;
+    cout<<"player 2 please enter row (0-2) and column (0-2)"<<endl;
+    cin>>x>>y;
+        if (board[x][y] != ' ' || x < 0 || x > 2 
+                || y < 0 || y > 2) { 
+            cout << "Invalid move. Try again.\n";
+            goto n;
+        }
+        else{
+             board[x][y] = Computer;
              counter--;
              
         }
