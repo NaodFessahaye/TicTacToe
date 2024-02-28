@@ -1,183 +1,179 @@
-#include <stdio.h>
-#include <stdlib.h>
-//#include <ctype.h>
 #include <iostream>
-#include <fstream>
 #include <time.h>
 
 using namespace std;
 
+enum Player { X, Y };
 
 char board[3][3];
-const char Player= 'X';
-const char Computer = 'Y';
-int counter= 9;
-
-bool gameover = false;
+const Player PlayerX = X;
+const Player PlayerY = Y;
+int counter = 9;
 
 void resetBoard();
 void printBoard();
-void player1Move();
-void player2Move();
+void player1Move(Player currentPlayer);
+void player2Move(Player currentPlayer);
+void computerMove(Player currentPlayer);
 char checkWinner();
-void computerMove();
-int type;
 
-
-
-int main(){
-    cout<<"print"<<endl;
-    char winner = ' ';
+int main() {
+    cout << "Welcome to Tic-Tac-Toe!" << endl;
     char ask = ' ';
-    
-    
-    do{
+
+    do {
         resetBoard();
-        cout<<"1 player or 2 players?"<<endl;
-        cin>>type;
+        cout << "1 player or 2 players?" << endl;
+        int type;
+        cin >> type;
         printBoard();
-    while(true){
-        
-          
-        
-        player1Move();
-        printBoard();
-        
-        if (checkWinner() == Player){
-            cout<<"player wins"<<endl;
-            break;
-            
-        }
-        
-        else if(checkWinner() == Computer){
-            cout<<"computer wins"<<endl;
-            break;
-        }
-        
-        if (counter == 0 && checkWinner() == ' ') { 
-            cout << "It's a draw!\n"; 
-            break;
-            
-        }
-        
-        if (type ==1){
-            computerMove();
-        }
-        else if(type ==2){
-            player2Move();
-        }
-        printBoard();
-    }
-    
-            cout<<"do you want to play again put Y to play"<<endl;
-            cin>>ask;
-            ask = toupper(ask);
-    
-    
-    
-}while(ask == 'Y');
 
-cout<<"thank you for play"<<endl;
-return 0;
+        while (true) {
+            player1Move(PlayerX);
+            printBoard();
+
+            if (checkWinner() == PlayerX) {
+                cout << "Player 1 wins!" << endl;
+                break;
+            } else if (checkWinner() == PlayerY) {
+                cout << "Player 2 wins!" << endl;
+                break;
+            }
+
+            if (counter == 0 && checkWinner() == ' ') {
+                cout << "It's a draw!\n";
+                break;
+            }
+
+            if (type == 1) {
+                computerMove(PlayerY);
+            } else if (type == 2) {
+                player2Move(PlayerY);
+            }
+            printBoard();
+
+            if (checkWinner() == PlayerX) {
+                cout << "Player 1 wins!" << endl;
+                break;
+            } else if (checkWinner() == PlayerY) {
+                if (type == 1) {
+                cout << "Computer wins!" << endl;
+                } else if (type == 2) {
+                cout << "Player 2 wins!" << endl;
+            }
+                
+                break;
+            }
+
+            if (counter == 0 && checkWinner() == ' ') {
+                cout << "It's a draw!\n";
+                break;
+            }
+        }
+
+        cout << "Do you want to play again? Enter Y to play." << endl;
+        cin >> ask;
+        ask = toupper(ask);
+
+    } while (ask == 'Y');
+
+    cout << "Thank you for playing!" << endl;
+    return 0;
 }
 
-
-
-void computerMove(){
-    s:
+void computerMove(Player currentPlayer) {
     srand(time(0));
-    
-    if(counter>0){
-        int x = rand()%2;
-        int y = rand()%2;
-        if(board[x][y] == ' '){
-            board[x][y] = Computer;
+
+    // Check for a winning move first
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (board[i][j] == ' ') {
+                board[i][j] = currentPlayer;
+                if (checkWinner() == currentPlayer) {
+                    counter--;
+                    return;  // Winning move found, make the move
+                }
+                board[i][j] = ' ';  // Undo the move if it doesn't lead to a win
+            }
+        }
+    }
+
+    // If no winning move, make a random move
+    while (true) {
+        int x = rand() % 3;
+        int y = rand() % 3;
+        if (board[x][y] == ' ') {
+            board[x][y] = currentPlayer;
             counter--;
+            break;  // Valid move made
         }
-       else{
-            goto s;
-       }
-        
-    }
-            
-}
-
-void printBoard(){
-    cout << "-------------\n"; 
-    for (int i = 0; i < 3; i++) { 
-        cout << "| "; 
-        for (int j = 0; j < 3; j++) { 
-            cout << board[i][j] << " | "; 
-        } 
-        cout << "\n-------------\n"; 
     }
 }
 
-void resetBoard(){
-    for (int i = 0; i < 3; i++) { 
+void printBoard() {
+    cout << "-------------\n";
+    for (int i = 0; i < 3; i++) {
+        cout << "| ";
         for (int j = 0; j < 3; j++) {
-            board[i][j] =' ';
+             cout << (board[i][j] == PlayerX ? "X" : (board[i][j] == PlayerY ? "Y" : " ")) << " | ";
+        }
+        cout << "\n-------------\n";
+    }
+}
+
+void resetBoard() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            board[i][j] = ' ';
         }
     }
-    
+    counter = 9;
 }
 
-void player1Move(){
-    m:
-    int x,y;
-    cout<<"player 1 please enter row (0-2) and column (0-2)"<<endl;
-    cin>>x>>y;
-        if (board[x][y] != ' ' || x < 0 || x > 2 
-                || y < 0 || y > 2) { 
-            cout << "Invalid move. Try again.\n";
-            goto m;
-        }
-        else{
-             board[x][y] = Player;
-             counter--;
-             
-        }
-   
+void player1Move(Player currentPlayer) {
+    int x, y;
+    cout << "Player 1, please enter row (0-2) and column (0-2): ";
+    cin >> x >> y;
+    if (board[x][y] == ' ' && x >= 0 && x < 3 && y >= 0 && y < 3) {
+        board[x][y] = currentPlayer;
+        counter--;
+    } else {
+        cout << "Invalid move. Try again.\n";
+        player1Move(currentPlayer);
+    }
 }
 
-void player2Move(){
-    n:
-    int x,y;
-    cout<<"player 2 please enter row (0-2) and column (0-2)"<<endl;
-    cin>>x>>y;
-        if (board[x][y] != ' ' || x < 0 || x > 2 
-                || y < 0 || y > 2) { 
-            cout << "Invalid move. Try again.\n";
-            goto n;
-        }
-        else{
-             board[x][y] = Computer;
-             counter--;
-             
-        }
-   
+void player2Move(Player currentPlayer) {
+    int x, y;
+    cout << "Player 2, please enter row (0-2) and column (0-2): ";
+    cin >> x >> y;
+    if (board[x][y] == ' ' && x >= 0 && x < 3 && y >= 0 && y < 3) {
+        board[x][y] = currentPlayer;
+        counter--;
+    } else {
+        cout << "Invalid move. Try again.\n";
+        player2Move(currentPlayer);
+    }
 }
 
-char checkWinner(){
-    for(int i=0; i<3;i++){
-      if(board[i][0] == board[i][1] && board[i][0] == board[i][2]){
-        return board[i][0];
-      }  
-    
-  
-      if(board[0][i] == board[1][i] && board[0][i] == board[2][i]){
-        return board[0][i];
-      }  
+char checkWinner() {
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == board[i][1] && board[i][0] == board[i][2]) {
+            return board[i][0];
+        }
+
+        if (board[0][i] == board[1][i] && board[0][i] == board[2][i]) {
+            return board[0][i];
+        }
     }
 
-    
-      if(board[0][0] == board[1][1] && board[0][0] == board[2][2]){
+    if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
         return board[0][0];
-      }  
-    
-     
-      if(board[0][2] == board[1][1] && board[0][2] == board[2][0]){
+    }
+
+    if (board[0][2] == board[1][1] && board[0][2] == board[2][0]) {
         return board[0][2];
-      }  
+    }
+
     return ' ';
 }
