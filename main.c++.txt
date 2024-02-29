@@ -97,7 +97,48 @@ void computerMove(Player currentPlayer) {
             }
         }
     }
+    //block playe 1 from winning
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (board[i][j] == ' ') {
+                board[i][j] = (currentPlayer == PlayerX) ? PlayerY : PlayerX;
+                if (checkWinner() == (currentPlayer == PlayerX ? PlayerY : PlayerX)) {
+                    // Blocking move found, make the move to block the player
+                    board[i][j] = currentPlayer;
+                    counter--;
+                    return;
+                }
+                board[i][j] = ' ';  // Undo the move if it doesn't block the player
+            }
+        }
+    }
 
+    // Try to plan ahead for the second move (if first move is random)
+    if (counter < 8) {
+        // If player placed in a corner, place in the center
+        if (board[0][0] == PlayerY || board[0][2] == PlayerY || board[2][0] == PlayerY || board[2][2] == PlayerY) {
+            board[1][1] = currentPlayer;
+            counter--;
+            return;
+        }
+    }
+
+    // Try to plan ahead for the third move (if first and second moves are random)
+    if (counter < 7) {
+        // If player placed in the center, place in a corner
+        if (board[1][1] == PlayerY) {
+            int corners[4][2] = {{0, 0}, {0, 2}, {2, 0}, {2, 2}};
+            for (int k = 0; k < 4; ++k) {
+                int x = corners[k][0];
+                int y = corners[k][1];
+                if (board[x][y] == ' ') {
+                    board[x][y] = currentPlayer;
+                    counter--;
+                    return;
+                }
+            }
+        }
+    }
     // If no winning move, make a random move
     while (true) {
         int x = rand() % 3;
